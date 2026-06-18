@@ -1,0 +1,9 @@
+nvimos - minimal terminal-only Arch Linux
+
+Wi-Fi:      nmtui          (or nmcli device wifi connect <SSID> --ask)
+Bluetooth:  bluetoothctl
+Editor:     nvim is the default $EDITOR
+
+To install to disk, follow the Arch install guide and use this live
+shell's networking (already up via NetworkManager) and nvim to edit
+configs during the install.
