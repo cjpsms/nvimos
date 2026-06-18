@@ -55,3 +55,27 @@ Or flash to USB with `dd` / Ventoy / Rufus and boot real hardware.
 - `profile/profiledef.sh` — ISO metadata (name, label, boot modes).
 
 After editing, just re-run `./build.sh`.
+
+## install-image/ — installed-disk variant (lower RAM floor)
+
+The live ISO above needs ~512MB RAM to boot, because archiso's initramfs
+has to support booting on *any* PC (broad hardware detection = bigger
+initramfs = more RAM to decompress it). `install-image/build-disk.sh`
+instead builds a real installed-to-disk image (pacstrap + arch-chroot,
+GRUB BIOS, ext4) using mkinitcpio's `autodetect` hook, which prunes the
+initramfs down to just what's needed. That alone drops the boot floor to
+roughly 160–192MB.
+
+```sh
+cd install-image
+./build-disk.sh
+qemu-system-x86_64 -m 256 -drive file=disk.img,format=raw
+```
+
+Note: `autodetect` only includes kernel modules present on the *build*
+machine, not the target — since this builds inside a generic Docker
+container, `chroot-setup.sh` explicitly adds common storage-controller
+modules (`ahci`, `ata_piix`, `virtio_blk`, `nvme`, etc.) via `MODULES=` in
+`mkinitcpio.conf` so it still boots on real hardware or other VM backends.
+`disk.img` itself isn't committed (3GB raw image) — rebuild it with
+`./build-disk.sh`.
